@@ -1,0 +1,57 @@
+namespace Граф
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            List<string> edges = new List<string>() { "12", "15", "14", "23", "24", "25", "35", "36", "45", "47", "48", "56", "58", "59", "78", "89" };
+            List<string> weight = new List<string>() { "15", "14", "23", "19", "16", "15", "14", "26", "25", "23", "20", "24", "27", "18", "14", "18" };
+            List<string> result = new List<string>();
+            int j = 0;
+            int distance = 0;
+            int min = int.MaxValue;
+            int ordinal_numbers = 0;
+            result.Add(Console.ReadLine()); 
+            while (result.Count < 9)
+            {
+                for (int i = 0; i < result.Count; i++)
+                {
+                    for (j = 0; j < edges.Count; j++)
+                    {
+                        if (edges[j].Contains(result[i]))
+                        {
+                            if (Convert.ToInt32(weight[j]) < min)
+                            {
+                                min = Convert.ToInt32(weight[j]);
+                                ordinal_numbers = j;
+                            }
+                        }
+                    }
+
+                }
+                if (result.Contains(Convert.ToString(edges[ordinal_numbers][0])) && result.Contains(Convert.ToString(edges[ordinal_numbers][1])))
+                {
+                    edges.Remove(edges[ordinal_numbers]);
+                    weight.Remove(weight[ordinal_numbers]);
+                }
+                else if(result.Contains(Convert.ToString(edges[ordinal_numbers][0])) && !(result.Contains(Convert.ToString(edges[ordinal_numbers][1]))))
+                {
+                    result.Add((Convert.ToString(edges[ordinal_numbers][1])));
+                    distance += Convert.ToInt32(weight[ordinal_numbers]);
+                    edges.Remove(edges[ordinal_numbers]);
+                    weight.Remove(weight[ordinal_numbers]);
+                }
+                else
+                {
+                    result.Add((Convert.ToString(edges[ordinal_numbers][0])));
+                    distance += Convert.ToInt32(weight[ordinal_numbers]);
+                    edges.Remove(edges[ordinal_numbers]);
+                    weight.Remove(weight[ordinal_numbers]);
+                }              
+                min = int.MaxValue;
+            }
+            Console.WriteLine(distance);
+            Console.ReadLine();
+        }
+    }
+}
