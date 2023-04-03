@@ -1,0 +1,87 @@
+using System; using System.Collections.Generic; 
+using System.Linq; using System.Linq.Expressions; 
+using System.Runtime.InteropServices; using System.Text; 
+  
+namespace Algoritm_Kraskal 
+{ 
+    internal class Program     
+    { 
+        static void Main(string[] args)         
+        { 
+            int n = 9;            
+            int distance = 0; 
+            List<string> edges = new List<string>() { "12", "15", "14", "23", "24", "25", "35", "36", "45", "47", "48", "56", "58", "59", "78", "89" };         
+            List<int> weight = new List<int>() { 15, 14, 23, 19, 16, 15, 14, 26, 25, 23, 20, 24, 27, 18, 14, 18 }; 
+            List<string> result = new List<string> { "", "", "", "", "", "", "", "", ""};       
+            int index_min = weight.IndexOf(weight.Min()); 
+            int mass = 0;      
+            result[mass] += edges[index_min][0]; 
+            result[mass] += edges[index_min][1];      
+            mass += 1; 
+            distance += weight[index_min];        
+            edges.Remove(edges[index_min]); 
+            weight.Remove(weight[index_min]);     
+            int k = 2; 
+            int i0;          
+            int i1;
+            while (k < n)            
+            {
+                i0 = -100;             
+                i1 = -100;
+                index_min = weight.IndexOf(weight.Min());      
+                int wei = weight[index_min];
+                for (int i = 0; i < result.Count; i++)   
+                {
+                    if (result[i].Contains(edges[index_min][0]))       
+                    {
+                        i0 = i;                    
+                        }
+                    if (result[i].Contains(edges[index_min][1]))
+                    {          
+                    i1 = i;
+                    }            
+                }
+                if ((i0 == -100) && (i1 == -100))         
+                {
+                    result[mass] += edges[index_min][0];                 
+                    result[mass] += edges[index_min][1];
+                    distance += weight[index_min];          
+                    mass += 1;
+                    edges.Remove(edges[index_min]);    
+                    weight.Remove(weight[index_min]);
+                    k += 2;            
+                 }
+                if ((i0 == i1) && i1 != -100)         
+                {
+                    edges.Remove(edges[index_min]);        
+                    weight.Remove(weight[index_min]);
+                }             
+                if ((i0 != -100) && (i1 != -100) && (i0 != i1))
+                {         
+                    result[i0] += result[i1];
+                    result[i1] = "";              
+                    mass -= 1;
+                    distance += weight[index_min];     
+                    edges.Remove(edges[index_min]);
+                    weight.Remove(weight[index_min]);        
+                }
+                if ((i0 != -100) && (i1 == -100))           
+                {
+                    result[i0] += edges[index_min][1];    
+                    k += 1;
+                    distance += weight[index_min];            
+                    edges.Remove(edges[index_min]);
+                    weight.Remove(weight[index_min]);       
+                }
+                if ((i0 == -100) && (i1 != -100))
+                {               
+                   result[i1] += edges[index_min][0];
+                   distance += weight[index_min];
+                   k += 1;                   
+                   edges.Remove(edges[index_min]);
+                   weight.Remove(weight[index_min]);                }
+                }
+           Console.WriteLine(distance);            
+        }  
+    } 
+}
