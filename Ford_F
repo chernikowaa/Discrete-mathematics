@@ -1,0 +1,126 @@
+namespace DB
+{
+    internal class Array
+    {
+        static void Main(string[] args)
+        {
+            Point[] points = ReadData();
+            Point from = points[0];
+            Point to = points[1];
+
+            List<List<Point>> paths = new List<List<Point>>();
+            findAllPaths(from, to, new List<Point>(), paths);
+
+            paths = paths.OrderBy(path => getMinCapacity(from, path))
+                         .Reverse()
+                         .ToList();
+
+            int result = 0;
+            foreach (List<Point> path in paths) 
+            {
+                int minCapacity = getMinCapacity(from, path);
+                subtractionMinCapacity(from, path, minCapacity);
+                result += minCapacity;
+            }
+
+            Console.WriteLine(result);
+        }
+
+        static void subtractionMinCapacity(Point from, List<Point> path, int minCapacity)
+        {
+            int currentCapacity = from.neighbors.GetValueOrDefault(path[0]);
+            int newCapacity = currentCapacity - minCapacity;
+            from.neighbors[path[0]] = newCapacity;
+
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Point currentPoint = path[i];
+                Point neighbor = path[i + 1];
+                currentCapacity = currentPoint.neighbors.GetValueOrDefault(neighbor);
+                newCapacity = currentCapacity - minCapacity;
+                currentPoint.neighbors[neighbor] = newCapacity;
+            }
+        }
+
+        static void findAllPaths(Point currentPoint, Point destination, List<Point> currentPath, List<List<Point>> paths)
+        {
+            if (currentPoint == destination)
+            {
+                List<Point> finalPath = new List<Point>(currentPath);
+                paths.Add(finalPath);
+                return;
+            }
+
+            foreach (var pair in currentPoint.neighbors)
+            {
+                currentPath.Add(pair.Key);
+                findAllPaths(pair.Key, destination, currentPath, paths);
+                currentPath.Remove(pair.Key);
+            }
+        }
+
+        static int getMinCapacity(Point from, List<Point> path)
+        {
+            int minCapacity = from.neighbors.GetValueOrDefault(path[0]);
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Point currentPoint = path[i];
+                Point neighbor = path[i + 1];
+                int currentCapacity = currentPoint.neighbors.GetValueOrDefault(neighbor);
+                if (currentCapacity < minCapacity)
+                {
+                    minCapacity = currentCapacity;
+                }
+            }
+            return minCapacity;
+        }
+
+        static Point[] ReadData()
+        {
+            Point pointI = new Point("I");
+            Point pointP = new Point("p");
+            Point pointD = new Point("d");
+            Point pointA = new Point("a");
+            Point pointK = new Point("k");
+            Point pointC = new Point("c");
+            Point pointB = new Point("b");
+            Point pointS = new Point("S");
+
+            pointI.neighbors.Add(pointP, 7);
+            pointI.neighbors.Add(pointD, 5);
+            pointI.neighbors.Add(pointA, 3);
+
+            pointP.neighbors.Add(pointK, 2);
+            pointP.neighbors.Add(pointB, 3);
+
+            pointD.neighbors.Add(pointK, 2);
+            pointD.neighbors.Add(pointC, 6);
+
+            pointA.neighbors.Add(pointD, 2);
+            pointA.neighbors.Add(pointK, 1);
+            pointA.neighbors.Add(pointB, 6);
+
+            pointK.neighbors.Add(pointS, 6);
+
+            pointC.neighbors.Add(pointS, 4);
+            pointC.neighbors.Add(pointB, 1);
+
+            pointB.neighbors.Add(pointS, 5);
+
+            Point[] result = new Point[] {pointI, pointS};
+            return result;
+        }
+
+        class Point
+        {
+            public string name;
+
+            public Dictionary<Point, int> neighbors = new Dictionary<Point, int>();
+
+            public Point(string name)
+            {
+                this.name = name;
+            }
+        }
+    }
+}
