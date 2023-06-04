@@ -1,0 +1,108 @@
+namespace A_FordB
+{
+    class A_Ford_B
+    {
+        public static void Main()
+        {
+            List<int> ar = new List<int>();
+            Console.WriteLine("Введите кол-во вершин");
+            int n = Convert.ToInt32(Console.ReadLine()) + 1;
+            int[,] mas = new int[n, n];
+            int[,] mas1 = new int[n, n];
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    mas[i, j] = 1000;
+                    mas1[i, j] = 1000;
+                }
+            }
+
+            mas[1, 0] = 1;
+            mas1[1, 0] = 1;
+            mas1[0, 1] = 1;
+            mas1[1, 2] = 1;
+            mas1[1, 5] = 3;
+            mas1[2, 3] = 8;
+            mas1[2, 4] = 7;
+            mas1[2, 5] = 1;
+            mas1[3, 4] = 1;
+            mas1[3, 5] = -5;
+            mas1[4, 3] = 2;
+            mas1[5, 4] = 4;
+            for (int l = 2; l < n; l++)
+            {
+                mas[l, 0] = 1 + mas[l - 1, 0];
+                mas1[l, 0] = 1 + mas1[l - 1, 0];
+                mas1[0, l] = 1 + mas1[0, l - 1];
+            }
+
+            mas[0, 0] = 0;
+            for (int i = 0; i < n - 1; i++)
+            {
+                mas[0, i + 1] = i;
+                mas1[0, i + 1] = i;
+            }
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        Console.Write("Вершина\t");
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            Console.Write($"({mas1[i, j]})\t");
+                        }
+                        else Console.Write($"{mas1[i, j]}\t");
+                    }
+                }
+
+                Console.Write("\n");
+            }
+
+            Console.WriteLine("Выберите вершину");
+            int r = Convert.ToInt32(Console.ReadLine());
+            for (int k = 1; k < n - 1; k++)
+            {
+                for (int i = 1; i < n; i++)
+                {
+                    mas[r, i] = 0;
+                    ar = new List<int>();
+                    for (int j = 1; j < n; j++)
+                    {
+                        int a = mas[j, k] + mas1[j, i];
+                        ar.Add(a);
+                        a = ar.Min();
+                        mas[i, k + 1] = a;
+                    }
+                }
+            }
+            
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        Console.Write("Вершина\t");
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            Console.Write($"({mas[i, j]})\t");
+                        }
+                        else Console.Write($"{mas[i, j]}\t");
+                    }
+                }
+            
+                Console.Write("\n");
+            }
+        }
+    }
+}
