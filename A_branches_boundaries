@@ -1,0 +1,163 @@
+namespace DB
+{
+    class branches_boundaries
+    {
+        public static void Main()
+        {
+            int answer = 0;
+            int[,] matrix =
+            {
+                { 0, 1, 2, 3, 4, 5 },
+                { 1, 1000, 6, 4, 8, 7 },
+                { 2, 6, 1000, 7, 11, 7 },
+                { 3, 4, 7, 1000, 4, 3 },
+                { 4, 8, 11, 4, 1000, 5 },
+                { 5, 7, 7, 3, 5, 1000 }
+            };
+            int Find_str(int number_str)
+            {
+                int min_el = Int32.MaxValue;
+                for (int i = 1; i < matrix.GetLength(0); i++)
+                {
+                    if (matrix[number_str, i] < min_el)
+                    {
+                        min_el = matrix[number_str, i];
+                    }
+                }
+                return min_el;
+            }
+            int Find_column(int number_column)
+            {
+                int min_el = Int32.MaxValue;
+                for (int i = 1; i < matrix.GetLength(0); i++)
+                {
+                    if (matrix[i, number_column] < min_el)
+                    {
+                        min_el = matrix[i, number_column];
+                    }
+                }
+                return min_el;
+            }
+            int Find_degree(int i, int j)
+            {
+                int min_el_str = Int32.MaxValue;
+                int min_el_col = Int32.MaxValue;
+                for (int k = 1; k < matrix.GetLength(0); k++)
+                {
+                    if (k != j)
+                    {
+                        if (matrix[i, k] < min_el_str)
+                        {
+                            min_el_str = matrix[i, k];
+                        }
+                    }
+                    if (k != i)
+                    {
+                        if (matrix[k, j] < min_el_col)
+                        {
+                            min_el_col = matrix[k, j];
+                        }
+                    }
+                }
+                return min_el_str + min_el_col;
+            }
+            int [,] delete(int a, int b)
+            {
+                int[,] new_matrix = new int[matrix.GetLength(0)-1,matrix.GetLength(0)-1];
+                int new_row = 0;
+                int new_column = 0;
+                for (int i = 0; i < matrix.GetLength(0); i++)
+                {
+                    for (int j = 0; j < matrix.GetLength(0); j++)
+                    {
+                        if (i != a && j != b)
+                        {
+                            new_matrix[new_row, new_column] = matrix[i, j];
+                            if (new_column <= matrix.GetLength(0) - 1)
+                            {
+                                new_column += 1;
+                            }
+                            if (new_column == matrix.GetLength(0) - 1)
+                            {
+                                new_row += 1;
+                                new_column = 0;
+                            }
+                        }
+                    }
+                }
+                return new_matrix;
+            }
+            List<int[]> route=new List<int[]>();
+            while (matrix.GetLength(0) > 3)
+            {
+                for (int j = 1; j <matrix.GetLength(0); j++)
+                {
+                    int find_str = Find_str(j);
+                    for (int k = 1; k < matrix.GetLength(0); k++)
+                    {
+                        if (matrix[j, k] != 1000)
+                        {
+                            matrix[j,k] -= find_str;
+                        }
+                    }
+                    answer += find_str;
+                }
+                for (int j = 1; j <matrix.GetLength(0); j++)
+                {
+                    int find_column = Find_column(j);
+                    for (int k = 1; k <matrix.GetLength(0); k++)
+                    {
+                        if (matrix[k, j] != 1000)
+                        {
+                            matrix[k, j] -= find_column;
+                        }
+                    }
+                    answer += find_column;
+                }
+                Dictionary<int[], int> degree_zero = new Dictionary<int[], int>();
+                for (int i = 1; i < matrix.GetLength(0); i++)
+                {
+                    for (int j = 1; j < matrix.GetLength(0); j++)
+                    {
+                        if (matrix[i, j] == 0)
+                        {
+                            int[] a = { i, j };
+                            degree_zero[a] = Find_degree(i, j);
+                        }
+                    }
+                }
+                int[] find = new[] {2};
+                foreach(var person in degree_zero)
+                {
+                    if (person.Value == degree_zero.Values.Max())
+                    {
+                        find = person.Key;
+                        break;
+                    }
+                }
+                int[] new_index = { matrix[find[0],0], matrix[0, find[1]] };
+                route.Add(new_index);
+                matrix[find[1], find[0]] = 1000;
+                matrix=delete(find[0], find[1]);
+            }
+
+            for (int i = 1; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 1; j < matrix.GetLength(0); j++)
+                {
+                    if (matrix[i, j] == 0)
+                    {
+                        int[] new_road = {matrix [i,0],matrix[0, j]};
+                        route.Add(new_road);
+                    }
+                }
+            }
+
+            for (int i = 0; i < route.Count; i++)
+            {
+                Console.Write($"{route[i][0]},{route[i][1]}\t");
+            }
+            Console.WriteLine($"\n{answer}");
+        }
+    }
+}
